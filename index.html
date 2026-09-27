@@ -1,263 +1,440 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#f5f4ef" />
     <meta
       name="description"
-      content="点击圆圈，让它消失后在新的位置再次出现。"
+      content="An interactive essay about the difficulty of saying I love you."
     />
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307111f'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23ff5c7a'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='7' fill='%23f5f4ef'/%3E%3Ccircle cx='20' cy='32' r='10' fill='none' stroke='%2311100f' stroke-width='2'/%3E%3Ccircle cx='44' cy='32' r='10' fill='none' stroke='%2311100f' stroke-width='2'/%3E%3Ccircle cx='20' cy='32' r='2.5' fill='%2311100f'/%3E%3Ccircle cx='44' cy='32' r='2.5' fill='%2311100f'/%3E%3Cpath d='M5 35C15 14 24 50 33 30S49 17 59 32' fill='none' stroke='%23b050b3' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E"
     />
-    <title>点一下</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        font-family:
-          Inter, ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei",
-          system-ui, sans-serif;
-        background: #07111f;
-        color: #f4f7fb;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        width: 100%;
-        min-width: 320px;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-      }
-
-      body {
-        background:
-          radial-gradient(circle at 50% 42%, rgba(40, 86, 128, 0.2), transparent 33rem),
-          linear-gradient(145deg, #07111f 0%, #091827 58%, #06101d 100%);
-      }
-
-      .stage {
-        position: relative;
-        width: 100%;
-        height: 100dvh;
-        isolation: isolate;
-        overflow: hidden;
-      }
-
-      .stage::before {
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-        background-size: 48px 48px;
-        content: "";
-        mask-image: linear-gradient(to bottom, black, transparent 82%);
-      }
-
-      .intro {
-        position: absolute;
-        top: clamp(1.5rem, 5vh, 3.5rem);
-        left: 50%;
-        width: min(90vw, 30rem);
-        text-align: center;
-        transform: translateX(-50%);
-        pointer-events: none;
-      }
-
-      .intro h1 {
-        margin: 0;
-        font-size: clamp(1.15rem, 2.2vw, 1.5rem);
-        font-weight: 650;
-        letter-spacing: 0.08em;
-      }
-
-      .intro p {
-        margin: 0.55rem 0 0;
-        color: #8da3ba;
-        font-size: 0.9rem;
-        letter-spacing: 0.03em;
-      }
-
-      .target {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: clamp(4.75rem, 11vw, 6.5rem);
-        aspect-ratio: 1;
-        padding: 0;
-        border: 0;
-        border-radius: 50%;
-        outline: none;
-        cursor: pointer;
-        transform: translate(-50%, -50%) scale(1);
-        background:
-          radial-gradient(circle at 34% 28%, #ffb3c2 0 5%, transparent 6%),
-          radial-gradient(circle at 36% 30%, #ff8ea4 0%, #ff5c7a 44%, #df3158 100%);
-        box-shadow:
-          0 0 0 0.45rem rgba(255, 92, 122, 0.1),
-          0 1.3rem 3.5rem rgba(255, 57, 96, 0.35),
-          inset -0.5rem -0.7rem 1.2rem rgba(129, 12, 47, 0.25),
-          inset 0.4rem 0.45rem 1rem rgba(255, 255, 255, 0.14);
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-        transition:
-          opacity 220ms ease,
-          transform 260ms cubic-bezier(0.2, 0.85, 0.25, 1.25),
-          filter 220ms ease,
-          box-shadow 220ms ease;
-      }
-
-      .target::after {
-        position: absolute;
-        inset: -1rem;
-        border: 1px solid rgba(255, 124, 149, 0.15);
-        border-radius: inherit;
-        content: "";
-        transition: transform 220ms ease, opacity 220ms ease;
-      }
-
-      .target:hover {
-        filter: brightness(1.08);
-        box-shadow:
-          0 0 0 0.6rem rgba(255, 92, 122, 0.13),
-          0 1.5rem 4rem rgba(255, 57, 96, 0.45),
-          inset -0.5rem -0.7rem 1.2rem rgba(129, 12, 47, 0.25),
-          inset 0.4rem 0.45rem 1rem rgba(255, 255, 255, 0.14);
-      }
-
-      .target:hover::after {
-        transform: scale(1.08);
-      }
-
-      .target:focus-visible {
-        box-shadow:
-          0 0 0 0.25rem #07111f,
-          0 0 0 0.5rem #9fd9ff,
-          0 1.5rem 4rem rgba(255, 57, 96, 0.45);
-      }
-
-      .target.is-leaving {
-        opacity: 0;
-        filter: blur(0.35rem);
-        transform: translate(-50%, -50%) scale(0.08) rotate(14deg);
-      }
-
-      .target.is-entering {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.45);
-        transition: none;
-      }
-
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-
-      @media (max-height: 520px) {
-        .intro {
-          top: 1rem;
-        }
-
-        .intro p {
-          display: none;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .target,
-        .target::after {
-          transition-duration: 1ms;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+    <title>The Difficulty of Saying I Love You</title>
   </head>
   <body>
-    <main class="stage" aria-labelledby="page-title">
-      <header class="intro">
-        <h1 id="page-title">点一下</h1>
-        <p>它会消失，然后在别处回来</p>
-      </header>
+    <header class="site-header">
+      <a class="site-title" href="#home">The Difficulty of Saying I Love You</a>
+      <nav class="portal-menu" aria-label="Main navigation">
+        <button class="portal-trigger" type="button" aria-expanded="false" aria-controls="portal-panel">
+          <span aria-hidden="true">(´･_･`)</span>
+          <span class="sr-only">Open spaces menu</span>
+        </button>
+        <div class="portal-panel" id="portal-panel">
+          <a href="#home" data-route="home"><span>01</span> ESSAY <small>叙事</small></a>
+          <a href="#archive" data-route="archive"><span>02</span> ARCHIVE <small>爱的档案</small></a>
+          <a href="#notes" data-route="notes"><span>03</span> NOTES <small>写下来的话</small></a>
+          <a href="#breathe" data-route="breathe"><span>04</span> BREATHE <small>呼吸一下</small></a>
+        </div>
+      </nav>
+      <p class="site-index">01 / 05</p>
+    </header>
 
-      <button class="target" type="button" aria-label="点击圆圈"></button>
-      <p class="sr-only" aria-live="polite" id="status"></p>
+    <main id="app">
+      <div class="view view-home is-active" data-view="home">
+      <section
+        class="hero"
+        id="opening"
+        data-index="01"
+        data-name="What we say instead"
+        aria-labelledby="page-title"
+      >
+        <div class="love-underlay" aria-hidden="true">
+          <div class="love-field">
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+            <span>I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU · I LOVE YOU ·</span>
+          </div>
+        </div>
+
+        <div class="phrase-layer">
+          <h1 class="sr-only" id="page-title">The Difficulty of Saying I Love You</h1>
+          <div class="phrase-row row-a">
+            <p>text me when you get there <span>到了给我发消息</span></p>
+            <p>take care <span>多保重</span></p>
+            <p>are you okay <span>你还好吗</span></p>
+            <p>I'm sorry <span>对不起</span></p>
+          </div>
+          <div class="phrase-row row-b">
+            <p>I was thinking about you <span>我刚还在想你</span></p>
+            <p>it's okay <span>没事的</span></p>
+            <p>be safe <span>注意安全</span></p>
+            <p>good night <span>晚安</span></p>
+          </div>
+          <div class="phrase-row row-c">
+            <p>did you get home <span>到家了吗</span></p>
+            <p>I'll get you something to eat <span>我给你弄点吃的</span></p>
+            <p>dress warm <span>注意保暖</span></p>
+          </div>
+          <div class="phrase-row row-d">
+            <p>you can tell me <span>你可以告诉我的</span></p>
+            <p>what happened <span>怎么了</span></p>
+            <p>I wanna see you <span>我想见你</span></p>
+            <p>come home <span>回家吧</span></p>
+          </div>
+          <div class="phrase-row row-e">
+            <p>I saved some for you <span>我给你留了点</span></p>
+            <p>bring an umbrella <span>记得带伞</span></p>
+            <p>did you eat <span>吃了没</span></p>
+          </div>
+          <div class="phrase-row row-f">
+            <p>I'm always here <span>我一直在</span></p>
+            <p>you have me <span>有我在</span></p>
+            <p>remember to eat <span>记得吃饭</span></p>
+            <p>let's get a cat <span>我们养只猫吧</span></p>
+          </div>
+          <div class="phrase-row row-g">
+            <p>left the light on for you <span>给你留了灯</span></p>
+            <p>no rush <span>不急</span></p>
+            <p>come home if you're tired <span>累了就回家</span></p>
+          </div>
+        </div>
+
+        <div class="spotlight-ring" aria-hidden="true"></div>
+        <p class="hero-instruction">MOVE TO REVEAL WHAT ALL OF THIS MEANS</p>
+        <button class="enter-button" type="button" aria-label="Continue to the essay">
+          <span>continue</span>
+        </button>
+      </section>
+
+      <aside class="purpose-strip" aria-label="About this space">
+        <p>A quiet buffer for people who love deeply, but cannot always say it aloud.</p>
+        <p>在这里记录、感受、练习表达，也可以只停留一会儿。</p>
+        <div>
+          <a href="#notes">WRITE WHAT STAYS UNSAID ↗</a>
+          <a href="#breathe">TAKE ONE QUIET MINUTE ↗</a>
+        </div>
+      </aside>
+
+      <section
+        class="section contradiction"
+        id="contradiction"
+        data-index="02"
+        data-name="What comes out"
+        aria-labelledby="contradiction-title"
+      >
+        <svg class="contradiction-lines" viewBox="0 0 1000 700" aria-hidden="true">
+          <path d="M-80 390 C130 110 245 690 430 342 S690 110 1080 420" />
+          <path d="M-30 450 C155 290 275 605 490 430 S770 275 1040 505" />
+        </svg>
+        <div class="section-meta">
+          <p>02 — WHAT COMES OUT</p>
+          <p class="meta-cn">说出口的</p>
+        </div>
+        <div class="contradiction-copy">
+          <p class="overline">WHAT I SAY</p>
+          <h2 id="contradiction-title">THE WORDS<br />COME OUT<br /><em>WRONG.</em></h2>
+          <p class="contradiction-cn">语言有时只是感情的一次拙劣翻译。</p>
+        </div>
+        <div class="word-switch-wrap">
+          <p class="overline">PRESS THE SENTENCE</p>
+          <button class="word-switch" type="button" aria-pressed="false">
+            <span class="wrong-said">LEAVE ME ALONE.</span>
+            <span class="wrong-meant">ARE YOU HOME YET?</span>
+          </button>
+          <p class="wrong-translation">其实想问：你到家了吗？</p>
+        </div>
+      </section>
+
+      <section
+        class="section prologue"
+        id="prologue"
+        data-index="03"
+        data-name="Prologue"
+        aria-labelledby="prologue-title"
+      >
+        <svg class="prologue-lines" viewBox="0 0 1000 2200" preserveAspectRatio="none" aria-hidden="true">
+          <path class="draw-path" d="M60 50 C180 230 70 390 230 510 S520 500 420 730 280 1010 520 1150 870 1270 750 1490 520 1700 960 2050" />
+          <path class="draw-path delay" d="M920 210 C710 390 870 610 690 790 S510 1010 720 1190 910 1440 650 1640 470 1870 120 2150" />
+        </svg>
+        <div class="section-meta">
+          <p>03 — PROLOGUE</p>
+          <p class="meta-cn">序言</p>
+        </div>
+
+        <h2 class="prologue-heading" id="prologue-title">
+          <span>THE</span>
+          <span>DIFFICULTY</span>
+          <span>OF SAYING</span>
+          <em>I LOVE YOU</em>
+        </h2>
+
+        <div class="fragment fragment-a">
+          <p>
+            I have never felt that if I were to die the next second, there would be anything to regret in this moment.
+          </p>
+          <small>我从来不觉得，如果下一秒死去，此刻会有什么遗憾。</small>
+        </div>
+
+        <div class="fragment fragment-b">
+          <p>UNTIL I REALIZED—</p>
+        </div>
+
+        <div class="fragment fragment-c">
+          <p>
+            I had never told my friends or my parents:
+            <em>“I love you.”</em>
+          </p>
+          <small>我一直都没有对朋友和父母说过“我爱你”。</small>
+        </div>
+
+        <div class="fragment fragment-d">
+          <p>DOES THAT MEAN<br />I DON'T LOVE THEM?</p>
+          <small>难道这代表我不爱他们吗？</small>
+        </div>
+
+        <div class="fragment fragment-e">
+          <p>QUITE THE OPPOSITE.</p>
+          <small>恰恰相反。</small>
+        </div>
+
+        <div class="fragment fragment-f">
+          <p>
+            They are the largest part of who I am. The feeling is there. The sentence simply cannot cross the distance between the heart and the mouth.
+          </p>
+          <small>他们是组成我的最大一部分。感情一直在，只是句子无法越过从心到嘴的距离。</small>
+        </div>
+
+        <div class="fragment fragment-g">
+          <p>
+            In romance I said it too many times. Elsewhere, almost never. I open my messages and the few scattered “I love you”s are all from friends—not sent by me.
+          </p>
+        </div>
+
+        <div class="fragment fragment-h">
+          <p>JUST HOW HARD<br />IS IT TO SAY IT?</p>
+          <small>说出我爱你的难度，到底是多大？</small>
+        </div>
+      </section>
+
+      <section
+        class="section mouth geometry"
+        id="mouth"
+        data-index="04"
+        data-name="Between two points"
+        aria-labelledby="mouth-title"
+      >
+        <div class="section-meta">
+          <p>04 — BETWEEN TWO POINTS</p>
+          <p class="meta-cn">两点之间</p>
+        </div>
+
+        <div class="mouth-copy">
+          <p class="overline">THE DISTANCE BETWEEN FEELING AND LANGUAGE</p>
+          <h2 id="mouth-title">
+            THE SENTENCE<br />STAYS BETWEEN<br />TWO POINTS.
+          </h2>
+          <p class="mouth-cn">
+            感情已经抵达，语言却仍在途中。克制有时是一条不断绕远的线。
+          </p>
+        </div>
+
+        <div class="mouth-stage geometry-stage" aria-label="An abstract geometry showing a restrained sentence slowly opening">
+          <svg class="geometry-art" viewBox="0 0 1000 560" role="img" aria-hidden="true">
+            <circle class="geo-orbit orbit-a" cx="330" cy="280" r="128" />
+            <circle class="geo-orbit orbit-b" cx="670" cy="280" r="128" />
+            <circle class="geo-core core-a" cx="330" cy="280" r="17" />
+            <circle class="geo-core core-b" cx="670" cy="280" r="17" />
+            <path class="geo-thread ghost" d="M70 285 C190 90 250 470 360 260 S535 90 615 305 790 470 930 245" />
+            <path class="geo-thread live" d="M70 285 C190 90 250 470 360 260 S535 90 615 305 790 470 930 245" />
+            <line class="geo-tension" x1="347" y1="280" x2="653" y2="280" />
+            <rect class="geo-gate" x="482" y="262" width="36" height="36" transform="rotate(45 500 280)" />
+          </svg>
+        </div>
+
+        <div class="thread-control">
+          <label for="thread-pull">
+            <span>MAKE A LITTLE ROOM</span>
+            <small>给它一点空间</small>
+          </label>
+          <input id="thread-pull" type="range" min="0" max="100" value="0" />
+          <output for="thread-pull" class="thread-output">0%</output>
+        </div>
+
+        <blockquote>“Not silence. A sentence held in tension, waiting for another way through.”</blockquote>
+      </section>
+
+      <section
+        class="section finale"
+        id="finale"
+        data-index="05"
+        data-name="Say it again"
+        aria-labelledby="finale-title"
+      >
+        <svg class="action-thread" aria-hidden="true">
+          <line x1="50%" y1="50%" x2="50%" y2="50%" />
+        </svg>
+        <div class="love-echoes" aria-hidden="true"></div>
+        <div class="section-meta light-meta">
+          <p>05 — LOVE IS A VERB</p>
+          <p class="meta-cn">爱是行动</p>
+        </div>
+
+        <div class="finale-copy">
+          <p class="finale-lead">IF THE SENTENCE WILL NOT COME,</p>
+          <h2 id="finale-title">LET THE<br /><em>ACTION</em><br />ARRIVE FIRST.</h2>
+          <p class="finale-cn">如果说不出口，就用自己的方式去爱。不要留下遗憾。</p>
+        </div>
+
+        <div class="action-words" aria-label="Ways love becomes an action">
+          <button type="button"><b>🫂</b> STAY <span>留下</span></button>
+          <button type="button"><b>☎</b> CALL <span>打电话</span></button>
+          <button type="button"><b>🍲</b> FEED <span>给他吃的</span></button>
+          <button type="button"><b>🕯</b> WAIT <span>等他回来</span></button>
+          <button type="button"><b>🚪</b> SHOW UP <span>出现</span></button>
+          <button type="button"><b>🏠</b> COME HOME <span>回家</span></button>
+        </div>
+        <p class="finale-emoticon" aria-hidden="true">(づ｡◕‿‿◕｡)づ</p>
+
+        <div class="again-wrap">
+          <p>
+            Say it when you can. Show it when you cannot.<br />
+            Love is never only the sentence—but when the sentence comes,
+            <em>do not be afraid to repeat it.</em>
+          </p>
+          <button class="again-button" type="button">
+            SAY IT AGAIN
+            <span>再说一次</span>
+          </button>
+          <p class="again-status sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+      </div>
+
+      <section class="view interior-view archive-view" data-view="archive" aria-labelledby="archive-title" hidden>
+        <div class="interior-intro">
+          <p class="route-kicker">ARCHIVE OF LOVE / 爱的档案</p>
+          <h1 id="archive-title">LOVE,<br />IN OTHER<br /><em>FORMS.</em></h1>
+          <p class="route-deck">A growing constellation of ways people have held, lost, remembered, and practiced love. Follow any work to its original home.</p>
+        </div>
+        <div class="archive-controls" aria-label="Filter archive by medium">
+          <button class="is-active" type="button" data-filter="all">ALL</button>
+          <button type="button" data-filter="visual">VISUAL</button>
+          <button type="button" data-filter="performance">PERFORMANCE</button>
+          <button type="button" data-filter="film">FILM</button>
+          <button type="button" data-filter="sound">SOUND</button>
+          <button type="button" data-filter="text">TEXT</button>
+        </div>
+        <div class="archive-grid">
+          <a class="archive-card card-wide" data-medium="visual" href="https://www.moma.org/collection/works/81074" target="_blank" rel="noreferrer">
+            <span class="archive-no">001 / INSTALLATION</span><i class="archive-mark twin-clock" aria-hidden="true"></i>
+            <h2>“Untitled”<br />(Perfect Lovers)</h2><p>Félix González-Torres · 1991 · Cuba / USA</p><small>Two clocks begin together. Time makes difference inevitable.</small>
+          </a>
+          <a class="archive-card card-tall" data-medium="visual" href="https://sammlung.belvedere.at/objects/6678/der-kuss-liebespaar" target="_blank" rel="noreferrer">
+            <span class="archive-no">002 / PAINTING</span><i class="archive-mark kiss-mark" aria-hidden="true"></i>
+            <h2>The Kiss</h2><p>Gustav Klimt · 1908–09 · Austria</p><small>An embrace made monumental, ornamental, almost outside time.</small>
+          </a>
+          <a class="archive-card" data-medium="visual" href="https://www.metmuseum.org/art/collection/search/55233" target="_blank" rel="noreferrer">
+            <span class="archive-no">003 / PRINT</span><i class="archive-mark fold-mark" aria-hidden="true"></i>
+            <h2>Lovers</h2><p>Isoda Koryūsai · 1770 · Japan</p><small>A meeting hidden in dress, poetry, and the social codes of its time.</small>
+          </a>
+          <a class="archive-card card-wide" data-medium="performance" href="https://www.mplus.org.hk/en/collection/objects/the-lovers-2017110/" target="_blank" rel="noreferrer">
+            <span class="archive-no">004 / PERFORMANCE</span><i class="archive-mark walk-mark" aria-hidden="true"></i>
+            <h2>The Lovers:<br />Great Wall Walk</h2><p>Marina Abramović &amp; Ulay · 1988 · China</p><small>They crossed a continent to meet once—then separate.</small>
+          </a>
+          <a class="archive-card card-tall" data-medium="performance" href="https://www.tate.org.uk/art/artworks/hatoum-measures-of-distance-t07538" target="_blank" rel="noreferrer">
+            <span class="archive-no">005 / VIDEO</span><i class="archive-mark distance-mark" aria-hidden="true"></i>
+            <h2>Measures<br />of Distance</h2><p>Mona Hatoum · 1988 · Lebanon / UK</p><small>Letters, a mother’s voice, and the intimacy migration stretches.</small>
+          </a>
+          <a class="archive-card" data-medium="film" href="https://www.criterion.com/films/198-in-the-mood-for-love" target="_blank" rel="noreferrer">
+            <span class="archive-no">006 / FILM</span><i class="archive-mark frame-mark" aria-hidden="true"></i>
+            <h2>In the Mood<br />for Love</h2><p>Wong Kar Wai · 2000 · Hong Kong</p><small>Longing lives in corridors, repetition, restraint, and missed timing.</small>
+          </a>
+          <a class="archive-card card-wide" data-medium="film" href="https://a24films.com/films/past-lives/" target="_blank" rel="noreferrer">
+            <span class="archive-no">007 / FILM</span><i class="archive-mark orbit-mark" aria-hidden="true"></i>
+            <h2>Past Lives</h2><p>Celine Song · 2023 · South Korea / USA</p><small>Love includes the lives we chose, and the ones that remain possible only in memory.</small>
+          </a>
+          <a class="archive-card card-tall" data-medium="sound" href="https://www.youtube.com/watch?v=u0cS1FaKPWY" target="_blank" rel="noreferrer">
+            <span class="archive-no">008 / MUSIC VIDEO</span><i class="archive-mark sound-mark" aria-hidden="true"></i>
+            <h2>All Is Full<br />of Love</h2><p>Björk · 1999 · Iceland</p><small>Tenderness appears inside machines; receptivity becomes the instruction.</small>
+          </a>
+          <a class="archive-card" data-medium="sound" href="https://www.loc.gov/static/programs/national-recording-preservation-board/documents/Coltrane.pdf" target="_blank" rel="noreferrer">
+            <span class="archive-no">009 / MUSIC</span><i class="archive-mark wave-mark" aria-hidden="true"></i>
+            <h2>A Love<br />Supreme</h2><p>John Coltrane · 1964 · USA</p><small>A devotional suite where gratitude becomes breath, rhythm, and repetition.</small>
+          </a>
+          <a class="archive-card card-wide" data-medium="text" href="https://www.publishersweekly.com/9780688168445" target="_blank" rel="noreferrer">
+            <span class="archive-no">010 / BOOK</span><i class="archive-mark page-mark" aria-hidden="true"></i>
+            <h2>All About Love:<br />New Visions</h2><p>bell hooks · 2000 · USA</p><small>Love reframed as a practice of care, responsibility, respect, knowledge, and trust.</small>
+          </a>
+          <a class="archive-card" data-medium="text" href="https://www.penguinrandomhouse.com/books/691621/another-love-discourse-by-edie-meidav/" target="_blank" rel="noreferrer">
+            <span class="archive-no">011 / BOOK</span><i class="archive-mark type-mark" aria-hidden="true">…</i>
+            <h2>Another Love<br />Discourse</h2><p>Edie Meidav · 2022 · USA</p><small>A lyric form for grief, empathy, old love, and new love.</small>
+          </a>
+        </div>
+      </section>
+
+      <section class="view interior-view notes-view" data-view="notes" aria-labelledby="notes-title" hidden>
+        <div class="notes-sidebar">
+          <p class="route-kicker">WORDS THAT NEED SOMEWHERE TO REST / 写不出口的话</p>
+          <h1 id="notes-title">LEAVE<br />A NOTE.</h1>
+          <p>Write without sending. Keep the small evidence of love until it becomes visible.</p>
+          <form class="note-form">
+            <label for="note-text">WHAT WOULD YOU LIKE TO KEEP?</label>
+            <textarea id="note-text" maxlength="280" rows="7" placeholder="I thought of you when…" required></textarea>
+            <div class="note-form-meta"><span class="character-count">0 / 280</span><span>saved only on this device</span></div>
+            <fieldset class="note-colors">
+              <legend>NOTE TONE</legend>
+              <label><input type="radio" name="note-color" value="paper" checked /><span class="swatch swatch-paper">paper</span></label>
+              <label><input type="radio" name="note-color" value="violet" /><span class="swatch swatch-violet">violet</span></label>
+              <label><input type="radio" name="note-color" value="ink" /><span class="swatch swatch-ink">ink</span></label>
+            </fieldset>
+            <button class="make-note" type="submit">ADD TO THE WALL <span>贴上去</span></button>
+          </form>
+          <div class="note-tools">
+            <button class="export-notes" type="button">EXPORT AS IMAGE ↓</button>
+            <button class="clear-notes" type="button">CLEAR WALL</button>
+          </div>
+          <p class="note-status" aria-live="polite"></p>
+        </div>
+        <div class="note-wall" aria-label="Your saved notes">
+          <p class="empty-wall">The wall is quiet.<br /><span>写下第一张便签吧。</span></p>
+        </div>
+      </section>
+
+      <section class="view interior-view breathe-view" data-view="breathe" aria-labelledby="breathe-title" hidden>
+        <div class="breathe-copy">
+          <p class="route-kicker">A SMALL ROOM FOR REGULATION / 给情绪一点空间</p>
+          <h1 id="breathe-title">STAY<br />FOR ONE<br /><em>BREATH.</em></h1>
+          <p>You do not have to find the sentence yet. Let the body arrive first.</p>
+        </div>
+        <div class="breath-space">
+          <div class="breath-orbit" aria-hidden="true"><span></span></div>
+          <p class="breath-cue" aria-live="polite">READY</p>
+          <time class="breath-time" datetime="PT1M">01:00</time>
+          <div class="breath-controls">
+            <button class="breath-start" type="button">BEGIN</button>
+            <button class="breath-reset" type="button">RESET</button>
+            <button class="sound-toggle" type="button" aria-pressed="false">AMBIENT TONE: OFF</button>
+          </div>
+          <div class="duration-controls" aria-label="Meditation length">
+            <button class="is-active" type="button" data-minutes="1">1 MIN</button>
+            <button type="button" data-minutes="3">3 MIN</button>
+            <button type="button" data-minutes="5">5 MIN</button>
+          </div>
+          <p class="breath-note">INHALE 4 · HOLD 2 · EXHALE 6</p>
+        </div>
+      </section>
     </main>
-
-    <script>
-      const stage = document.querySelector(".stage");
-      const target = document.querySelector(".target");
-      const status = document.querySelector("#status");
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      );
-
-      let isMoving = false;
-
-      function moveToRandomPosition() {
-        const stageRect = stage.getBoundingClientRect();
-        const targetSize = target.getBoundingClientRect().width;
-        const edgeGap = Math.max(18, Math.min(stageRect.width, stageRect.height) * 0.04);
-        const topSafeZone = stageRect.height < 520 ? 72 : 128;
-        const minX = edgeGap + targetSize / 2;
-        const maxX = Math.max(minX, stageRect.width - edgeGap - targetSize / 2);
-        const minY = Math.min(stageRect.height / 2, topSafeZone + targetSize / 2);
-        const maxY = Math.max(minY, stageRect.height - edgeGap - targetSize / 2);
-
-        const x = minX + Math.random() * (maxX - minX);
-        const y = minY + Math.random() * (maxY - minY);
-
-        target.style.left = `${x}px`;
-        target.style.top = `${y}px`;
-      }
-
-      function cycleTarget() {
-        if (isMoving) return;
-
-        isMoving = true;
-        target.disabled = true;
-        target.classList.add("is-leaving");
-        status.textContent = "圆圈消失了";
-
-        const leaveDelay = prefersReducedMotion.matches ? 20 : 260;
-
-        window.setTimeout(() => {
-          moveToRandomPosition();
-          target.classList.remove("is-leaving");
-          target.classList.add("is-entering");
-
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              target.classList.remove("is-entering");
-              target.disabled = false;
-              isMoving = false;
-              status.textContent = "圆圈在新位置出现了";
-            });
-          });
-        }, leaveDelay);
-      }
-
-      target.addEventListener("click", cycleTarget);
-
-      let resizeTimer;
-      window.addEventListener("resize", () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(moveToRandomPosition, 120);
-      });
-    </script>
+    <canvas class="export-canvas" aria-hidden="true"></canvas>
   </body>
 </html>
