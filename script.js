@@ -212,6 +212,8 @@ const noteForm = document.querySelector(".note-form");
 const noteText = document.querySelector("#note-text");
 const characterCount = document.querySelector(".character-count");
 const noteWall = document.querySelector(".note-wall");
+const noteThread = document.querySelector(".note-thread");
+const noteThreadPaths = [...document.querySelectorAll(".note-thread path")];
 const emptyWall = document.querySelector(".empty-wall");
 const noteStatus = document.querySelector(".note-status");
 const exportNotesButton = document.querySelector(".export-notes");
@@ -233,9 +235,37 @@ function formatNoteDate(value) {
   return new Intl.DateTimeFormat("en", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
 
+function updateNoteThread() {
+  const cards = [...noteWall.querySelectorAll(".note-card")];
+  if (!cards.length) {
+    noteThreadPaths.forEach((path) => path.setAttribute("d", ""));
+    return;
+  }
+  const wallRect = noteWall.getBoundingClientRect();
+  const points = cards.map((card) => {
+    const rect = card.getBoundingClientRect();
+    return {
+      x: rect.left - wallRect.left + rect.width / 2,
+      y: rect.top - wallRect.top + rect.height / 2,
+    };
+  });
+  points.unshift({ x: -30, y: points[0].y });
+  points.push({ x: wallRect.width + 30, y: points.at(-1).y });
+  let pathData = `M ${points[0].x} ${points[0].y}`;
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1];
+    const current = points[index];
+    const bend = (current.x - previous.x) * 0.42;
+    pathData += ` C ${previous.x + bend} ${previous.y}, ${current.x - bend} ${current.y}, ${current.x} ${current.y}`;
+  }
+  noteThread.setAttribute("viewBox", `0 0 ${wallRect.width} ${Math.max(wallRect.height, noteWall.scrollHeight)}`);
+  noteThreadPaths.forEach((path) => path.setAttribute("d", pathData));
+}
+
 function renderNotes() {
   noteWall.querySelectorAll(".note-card").forEach((card) => card.remove());
   emptyWall.hidden = notes.length > 0;
+  noteWall.classList.toggle("has-notes", notes.length > 0);
   notes.forEach((note, index) => {
     const card = document.createElement("article");
     card.className = "note-card";
@@ -262,7 +292,11 @@ function renderNotes() {
     card.append(content, footer);
     noteWall.append(card);
   });
+  window.requestAnimationFrame(updateNoteThread);
+  window.setTimeout(updateNoteThread, 620);
 }
+
+window.addEventListener("resize", updateNoteThread);
 
 noteText.addEventListener("input", () => {
   characterCount.textContent = `${noteText.value.length} / 280`;

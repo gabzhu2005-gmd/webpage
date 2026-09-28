@@ -177,16 +177,24 @@ button {
   letter-spacing: 0.04em;
 }
 
-.row-b {
-  transform: translateX(-2vw);
+.phrase-row {
+  --row-x: 0vw;
+  --row-drift: 1vw;
+  animation: phrase-drift 17s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
-.row-d {
-  transform: translateX(3vw);
-}
+.row-a { --row-drift: 0.8vw; animation-duration: 18s; }
+.row-b { --row-x: -2vw; --row-drift: 1.2vw; animation-duration: 15s; animation-delay: -6s; }
+.row-c { --row-drift: 0.7vw; animation-duration: 20s; animation-delay: -11s; }
+.row-d { --row-x: 3vw; --row-drift: 1.1vw; animation-duration: 16s; animation-delay: -3s; }
+.row-e { --row-drift: 0.9vw; animation-duration: 19s; animation-delay: -14s; }
+.row-f { --row-x: -1vw; --row-drift: 1.15vw; animation-duration: 17s; animation-delay: -8s; }
+.row-g { --row-drift: 0.75vw; animation-duration: 21s; animation-delay: -4s; }
 
-.row-f {
-  transform: translateX(-1vw);
+@keyframes phrase-drift {
+  from { transform: translateX(calc(var(--row-x) - var(--row-drift))); }
+  to { transform: translateX(calc(var(--row-x) + var(--row-drift))); }
 }
 
 .spotlight-ring {
@@ -1278,6 +1286,105 @@ button {
   color: var(--purple);
 }
 
+.space-directory {
+  display: grid;
+  grid-template-columns: minmax(13rem, 1.15fr) repeat(4, minmax(9rem, 1fr));
+  border-top: 1px solid rgba(17, 16, 15, 0.18);
+  border-bottom: 1px solid rgba(17, 16, 15, 0.18);
+  background: var(--paper);
+}
+
+.directory-label,
+.space-directory > a {
+  min-height: 12rem;
+  padding: 1.35rem;
+}
+
+.directory-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.directory-label p {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.11em;
+}
+
+.directory-label small,
+.space-directory > a small {
+  color: var(--muted);
+  font-family: "FZTianZhenSongS", "Songti SC", serif;
+  font-size: 0.66rem;
+  line-height: 1.6;
+}
+
+.space-directory > a {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 0.35rem;
+  overflow: hidden;
+  border-left: 1px solid rgba(17, 16, 15, 0.18);
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 280ms ease, background 280ms ease;
+}
+
+.space-directory > a::after {
+  position: absolute;
+  right: -15%;
+  bottom: 37%;
+  width: 72%;
+  height: 1px;
+  background: var(--purple);
+  content: "";
+  transform: rotate(-12deg) scaleX(0.28);
+  transform-origin: right;
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.space-directory > a:hover,
+.space-directory > a:focus-visible {
+  color: var(--paper);
+  background: var(--ink);
+  outline: none;
+}
+
+.space-directory > a:hover::after,
+.space-directory > a:focus-visible::after {
+  transform: rotate(-12deg) scaleX(1);
+}
+
+.space-directory > a i {
+  align-self: start;
+  color: var(--purple);
+  font-family: ui-monospace, monospace;
+  font-size: 0.76rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.space-directory > a:hover i,
+.space-directory > a:focus-visible i {
+  transform: translateX(0.7rem) rotate(2deg);
+}
+
+.space-directory > a strong {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1.1rem, 1.7vw, 1.65rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.space-directory > a small {
+  position: relative;
+  z-index: 1;
+}
+
 .draw-path {
   animation: line-breathe 8s ease-in-out infinite alternate;
 }
@@ -1755,12 +1862,52 @@ button {
   gap: 1.4rem;
   align-content: start;
   padding: 4rem 0;
+  overflow: hidden;
   background-image: radial-gradient(rgba(17, 16, 15, 0.16) 0.7px, transparent 0.7px);
   background-size: 17px 17px;
+  isolation: isolate;
+}
+
+.note-thread {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.note-wall.has-notes .note-thread {
+  opacity: 0.42;
+}
+
+.note-thread path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.note-thread-ghost {
+  stroke: rgba(17, 16, 15, 0.22);
+  stroke-width: 1;
+}
+
+.note-thread-live {
+  stroke: var(--purple);
+  stroke-width: 1.1;
+  stroke-dasharray: 8 13;
+  animation: note-thread-travel 18s linear infinite;
+}
+
+@keyframes note-thread-travel {
+  to { stroke-dashoffset: -210; }
 }
 
 .empty-wall {
   position: absolute;
+  z-index: 1;
   top: 48%;
   left: 50%;
   margin: 0;
@@ -1778,6 +1925,7 @@ button {
 
 .note-card {
   position: relative;
+  z-index: 1;
   display: flex;
   min-height: 15rem;
   flex-direction: column;
@@ -2088,6 +2236,7 @@ button {
   inset: 0;
   border: 1px solid var(--ink);
   background: var(--paper);
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1), background 280ms ease;
 }
 
 .tarot-deck span:nth-child(1) { transform: translate(-0.8rem, 0.7rem) rotate(-3deg); }
@@ -2095,6 +2244,10 @@ button {
 .tarot-deck span:nth-child(3) {
   background-image: repeating-linear-gradient(45deg, transparent 0 13px, rgba(176, 80, 179, 0.32) 13px 14px);
 }
+
+.tarot-deck:hover span:nth-child(1) { transform: translate(-1.7rem, 1rem) rotate(-7deg); }
+.tarot-deck:hover span:nth-child(2) { transform: translate(1.5rem, 0.6rem) rotate(5deg); }
+.tarot-deck:hover span:nth-child(3) { transform: translateY(-0.35rem); }
 
 .tarot-deck i {
   position: absolute;
@@ -2140,13 +2293,62 @@ button {
 }
 
 .tarot-card {
+  position: relative;
   width: min(100%, 21rem);
   aspect-ratio: 0.61;
   padding: 0.7rem;
+  overflow: hidden;
   border: 1px solid var(--ink);
   background: var(--paper);
   box-shadow: 1rem 1.2rem 0 rgba(17, 16, 15, 0.08);
   animation: card-arrive 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: color 320ms ease, background 320ms ease, box-shadow 420ms ease, translate 420ms cubic-bezier(0.16, 1, 0.3, 1), rotate 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tarot-card::before,
+.tarot-card::after {
+  position: absolute;
+  z-index: 0;
+  border: 1px solid var(--purple);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1), opacity 320ms ease;
+}
+
+.tarot-card::before {
+  top: 24%;
+  left: -46%;
+  width: 180%;
+  height: 28%;
+  opacity: 0.28;
+  transform: rotate(-18deg);
+}
+
+.tarot-card::after {
+  right: -28%;
+  bottom: 15%;
+  width: 58%;
+  aspect-ratio: 1;
+  opacity: 0.18;
+}
+
+.tarot-card:hover {
+  color: var(--paper);
+  background: var(--ink);
+  box-shadow: 1.35rem 1.5rem 0 rgba(176, 80, 179, 0.2);
+  translate: 0 -0.55rem;
+  rotate: -0.7deg;
+}
+
+.tarot-card:hover::before {
+  opacity: 0.72;
+  transform: rotate(8deg) scale(1.12);
+}
+
+.tarot-card:hover::after {
+  opacity: 0.55;
+  transform: translate(-1.2rem, -0.8rem) scale(1.2);
 }
 
 .tarot-card.is-reversed .tarot-card-frame {
@@ -2159,12 +2361,17 @@ button {
 
 .tarot-card-frame {
   position: relative;
+  z-index: 1;
   display: grid;
   height: 100%;
   grid-template-rows: auto 1fr auto;
   padding: 1rem;
   border: 1px solid var(--purple);
-  transition: transform 500ms ease;
+  transition: transform 500ms ease, border-color 320ms ease;
+}
+
+.tarot-card:hover .tarot-card-frame {
+  border-color: #d77bda;
 }
 
 .tarot-card-number {
@@ -2194,7 +2401,17 @@ button {
   width: 2.2rem;
   height: 2.2rem;
   border: 1px solid var(--ink);
+  transition: translate 420ms cubic-bezier(0.16, 1, 0.3, 1), scale 420ms cubic-bezier(0.16, 1, 0.3, 1), border-color 320ms ease, background 320ms ease;
 }
+
+.tarot-card:hover .tarot-symbol:nth-child(odd) { translate: -0.18rem -0.35rem; scale: 1.08; }
+.tarot-card:hover .tarot-symbol:nth-child(even) { translate: 0.18rem 0.28rem; scale: 0.94; }
+.tarot-card:hover .tarot-symbol { border-color: var(--paper); }
+.tarot-card:hover .tarot-symbol.swords { border-color: transparent transparent var(--paper) var(--paper); }
+.tarot-card:hover .tarot-symbol.wands { background: var(--paper); }
+.tarot-card:hover .tarot-symbol.cups { background: rgba(176, 80, 179, 0.24); }
+.tarot-card:hover .tarot-symbol.major,
+.tarot-card:hover .tarot-symbol.court { border-color: #d77bda; }
 
 .tarot-symbol.swords {
   border-color: transparent transparent var(--ink) var(--ink);
@@ -2232,6 +2449,10 @@ button {
   border: 1px solid var(--ink);
   border-radius: 50%;
   content: "";
+}
+
+.tarot-card:hover .tarot-symbol.major::after {
+  border-color: var(--paper);
 }
 
 .tarot-symbol.court {
@@ -2305,6 +2526,15 @@ button {
 }
 
 @media (max-width: 900px) {
+  .space-directory {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .directory-label {
+    grid-column: 1 / -1;
+    min-height: 7rem;
+  }
+
   .interior-intro {
     grid-template-columns: 1fr;
   }
@@ -2337,6 +2567,10 @@ button {
 }
 
 @media (max-width: 760px) {
+  .phrase-row {
+    --row-drift: 0.45rem;
+  }
+
   .site-header {
     grid-template-columns: 1fr auto 1fr;
     padding-top: 0.75rem;
@@ -2379,6 +2613,24 @@ button {
 
   .purpose-strip {
     grid-template-columns: 1fr;
+  }
+
+  .space-directory {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .directory-label {
+    grid-column: 1 / -1;
+  }
+
+  .space-directory > a:nth-of-type(odd) {
+    border-left: 0;
+  }
+
+  .directory-label,
+  .space-directory > a {
+    min-height: 10rem;
+    padding: 1rem;
   }
 
   .geometry-stage {
