@@ -11,7 +11,7 @@
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='7' fill='%23f5f4ef'/%3E%3Ccircle cx='20' cy='32' r='10' fill='none' stroke='%2311100f' stroke-width='2'/%3E%3Ccircle cx='44' cy='32' r='10' fill='none' stroke='%2311100f' stroke-width='2'/%3E%3Ccircle cx='20' cy='32' r='2.5' fill='%2311100f'/%3E%3Ccircle cx='44' cy='32' r='2.5' fill='%2311100f'/%3E%3Cpath d='M5 35C15 14 24 50 33 30S49 17 59 32' fill='none' stroke='%23b050b3' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='7' fill='%23f5f4ef'/%3E%3Ccircle cx='12' cy='48' r='4' fill='%2311100f'/%3E%3Cpath d='M12 48C23 48 18 25 31 29S40 15 51 14' fill='none' stroke='%23b050b3' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M51 6L59 14L51 22L43 14Z' fill='none' stroke='%2311100f' stroke-width='2'/%3E%3Cpath d='M28 18V44M36 14V38' stroke='%2311100f' stroke-width='1' opacity='.5'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
@@ -30,6 +30,7 @@
           <a href="#archive" data-route="archive"><span>02</span> ARCHIVE <small>爱的档案</small></a>
           <a href="#notes" data-route="notes"><span>03</span> NOTES <small>写下来的话</small></a>
           <a href="#breathe" data-route="breathe"><span>04</span> BREATHE <small>呼吸一下</small></a>
+          <a href="#tarot" data-route="tarot"><span>05</span> TAROT <small>抽一张牌</small></a>
         </div>
       </nav>
       <p class="site-index">01 / 05</p>
@@ -249,16 +250,16 @@
           </p>
         </div>
 
-        <div class="mouth-stage geometry-stage" aria-label="An abstract geometry showing a restrained sentence slowly opening">
+        <div class="mouth-stage geometry-stage" aria-label="An abstract route passing through several gates toward a distant point">
           <svg class="geometry-art" viewBox="0 0 1000 560" role="img" aria-hidden="true">
-            <circle class="geo-orbit orbit-a" cx="330" cy="280" r="128" />
-            <circle class="geo-orbit orbit-b" cx="670" cy="280" r="128" />
-            <circle class="geo-core core-a" cx="330" cy="280" r="17" />
-            <circle class="geo-core core-b" cx="670" cy="280" r="17" />
-            <path class="geo-thread ghost" d="M70 285 C190 90 250 470 360 260 S535 90 615 305 790 470 930 245" />
-            <path class="geo-thread live" d="M70 285 C190 90 250 470 360 260 S535 90 615 305 790 470 930 245" />
-            <line class="geo-tension" x1="347" y1="280" x2="653" y2="280" />
-            <rect class="geo-gate" x="482" y="262" width="36" height="36" transform="rotate(45 500 280)" />
+            <circle class="geo-origin" cx="92" cy="438" r="13" />
+            <rect class="geo-gate gate-a" x="235" y="120" width="122" height="350" />
+            <rect class="geo-gate gate-b" x="443" y="72" width="74" height="416" />
+            <rect class="geo-gate gate-c" x="648" y="145" width="152" height="284" />
+            <path class="geo-thread ghost" d="M92 438 C210 430 178 180 294 214 S365 428 466 321 526 112 626 161 707 394 790 300 838 172 908 118" />
+            <path class="geo-thread live" d="M92 438 C210 430 178 180 294 214 S365 428 466 321 526 112 626 161 707 394 790 300 838 172 908 118" />
+            <path class="geo-arrival" d="M908 82 L944 118 L908 154 L872 118 Z" />
+            <line class="geo-tension" x1="92" y1="438" x2="92" y2="505" />
           </svg>
         </div>
 
@@ -432,6 +433,45 @@
             <button type="button" data-minutes="5">5 MIN</button>
           </div>
           <p class="breath-note">INHALE 4 · HOLD 2 · EXHALE 6</p>
+        </div>
+      </section>
+
+      <section class="view interior-view tarot-view" data-view="tarot" aria-labelledby="tarot-title" hidden>
+        <div class="tarot-copy">
+          <p class="route-kicker">ONE QUESTION · ONE CARD / 问一个问题，抽一张牌</p>
+          <h1 id="tarot-title">ASK.<br />SHUFFLE.<br /><em>NOTICE.</em></h1>
+          <p>Some feelings resist a direct answer. Let one symbol interrupt the usual story—and notice what it makes easier to name.</p>
+          <form class="tarot-form">
+            <label for="tarot-question">WHAT IS SITTING WITH YOU?</label>
+            <textarea id="tarot-question" rows="4" maxlength="220" placeholder="What am I afraid to say?" required></textarea>
+            <div class="tarot-form-meta"><span class="tarot-count">0 / 220</span><span>your question stays on this page</span></div>
+            <button class="tarot-draw" type="submit">SHUFFLE &amp; DRAW <span>洗牌 / 抽一张</span></button>
+          </form>
+          <p class="tarot-disclaimer">A reflective prompt, not a prediction. Take what opens a thought; leave the rest.</p>
+        </div>
+
+        <div class="tarot-table">
+          <div class="tarot-deck" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <i>◇</i>
+          </div>
+          <article class="tarot-result" hidden aria-live="polite">
+            <div class="tarot-card" aria-label="Drawn tarot card">
+              <div class="tarot-card-frame">
+                <span class="tarot-card-number"></span>
+                <div class="tarot-card-symbols" aria-hidden="true"></div>
+                <p class="tarot-card-name"></p>
+              </div>
+            </div>
+            <div class="tarot-reading">
+              <p class="tarot-question-echo"></p>
+              <p class="tarot-orientation"></p>
+              <h2 class="tarot-result-name"></h2>
+              <p class="tarot-keywords"></p>
+              <p class="tarot-reflection"></p>
+              <button class="tarot-again" type="button">ASK ANOTHER <span>再问一个</span></button>
+            </div>
+          </article>
         </div>
       </section>
     </main>

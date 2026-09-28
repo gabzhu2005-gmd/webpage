@@ -11,6 +11,7 @@ const routeLabels = {
   archive: "ARCHIVE",
   notes: "NOTES",
   breathe: "BREATHE",
+  tarot: "TAROT",
 };
 
 function currentRoute() {
@@ -507,3 +508,219 @@ soundToggle.addEventListener("click", async () => {
 });
 
 displayBreathTime();
+
+const tarotForm = document.querySelector(".tarot-form");
+const tarotQuestion = document.querySelector("#tarot-question");
+const tarotCount = document.querySelector(".tarot-count");
+const tarotDraw = document.querySelector(".tarot-draw");
+const tarotAgain = document.querySelector(".tarot-again");
+const tarotTable = document.querySelector(".tarot-table");
+const tarotResult = document.querySelector(".tarot-result");
+const tarotCard = document.querySelector(".tarot-card");
+const tarotCardNumber = document.querySelector(".tarot-card-number");
+const tarotCardName = document.querySelector(".tarot-card-name");
+const tarotCardSymbols = document.querySelector(".tarot-card-symbols");
+const tarotQuestionEcho = document.querySelector(".tarot-question-echo");
+const tarotOrientation = document.querySelector(".tarot-orientation");
+const tarotResultName = document.querySelector(".tarot-result-name");
+const tarotKeywords = document.querySelector(".tarot-keywords");
+const tarotReflection = document.querySelector(".tarot-reflection");
+
+const majorArcana = [
+  ["0", "The Fool", "beginnings · spontaneity · trust", "recklessness · holding back · naivety"],
+  ["I", "The Magician", "willpower · skill · manifestation", "manipulation · scattered energy · untapped talent"],
+  ["II", "The High Priestess", "intuition · mystery · inner knowing", "disconnection · hidden motives · silenced intuition"],
+  ["III", "The Empress", "nurture · abundance · sensuality", "creative block · dependence · self-neglect"],
+  ["IV", "The Emperor", "structure · authority · stability", "rigidity · control · domination"],
+  ["V", "The Hierophant", "tradition · teaching · shared belief", "rebellion · dogma · personal belief"],
+  ["VI", "The Lovers", "union · choice · alignment", "disharmony · imbalance · avoidance"],
+  ["VII", "The Chariot", "direction · willpower · momentum", "aggression · lack of direction · self-doubt"],
+  ["VIII", "Strength", "courage · compassion · inner calm", "insecurity · self-doubt · raw emotion"],
+  ["IX", "The Hermit", "solitude · reflection · inner guidance", "isolation · withdrawal · loneliness"],
+  ["X", "Wheel of Fortune", "cycles · change · turning point", "resistance · setbacks · repeating patterns"],
+  ["XI", "Justice", "truth · accountability · fairness", "dishonesty · avoidance · unfairness"],
+  ["XII", "The Hanged Man", "pause · surrender · new perspective", "stalling · resistance · indecision"],
+  ["XIII", "Death", "endings · transformation · release", "fear of change · stagnation · holding on"],
+  ["XIV", "Temperance", "balance · patience · integration", "excess · imbalance · friction"],
+  ["XV", "The Devil", "attachment · desire · shadow", "release · reclaiming power · detachment"],
+  ["XVI", "The Tower", "upheaval · revelation · liberation", "avoiding change · internal crisis · fear"],
+  ["XVII", "The Star", "hope · healing · renewal", "discouragement · disconnection · loss of faith"],
+  ["XVIII", "The Moon", "uncertainty · dreams · subconscious", "clarity · facing fear · released confusion"],
+  ["XIX", "The Sun", "vitality · joy · openness", "dimmed joy · overconfidence · temporary sadness"],
+  ["XX", "Judgement", "awakening · reckoning · calling", "self-doubt · avoidance · harsh judgement"],
+  ["XXI", "The World", "completion · wholeness · belonging", "unfinished business · delay · lack of closure"],
+].map(([number, name, upright, reversed]) => ({ number, name, upright, reversed, type: "major" }));
+
+const minorMeanings = {
+  Wands: [
+    ["Ace", "inspiration · desire · new energy", "delay · low energy · blocked spark"],
+    ["Two", "planning · possibility · decision", "fear of change · poor planning · playing safe"],
+    ["Three", "progress · expansion · foresight", "obstacles · delay · limited vision"],
+    ["Four", "celebration · home · belonging", "instability · private joy · tension at home"],
+    ["Five", "competition · friction · lively conflict", "avoiding conflict · compromise · inner tension"],
+    ["Six", "recognition · confidence · victory", "self-doubt · private achievement · fall from grace"],
+    ["Seven", "conviction · boundaries · perseverance", "exhaustion · defensiveness · giving up"],
+    ["Eight", "movement · messages · rapid change", "delay · miscommunication · scattered action"],
+    ["Nine", "resilience · persistence · last stand", "fatigue · suspicion · depleted boundaries"],
+    ["Ten", "burden · responsibility · carrying too much", "release · delegation · collapse under weight"],
+    ["Page", "curiosity · discovery · free spirit", "bad news · restlessness · unfinished ideas"],
+    ["Knight", "passion · adventure · impulsiveness", "haste · anger · reckless pursuit"],
+    ["Queen", "confidence · warmth · determination", "jealousy · insecurity · demanding energy"],
+    ["King", "vision · leadership · bold action", "impulsiveness · arrogance · forceful control"],
+  ],
+  Cups: [
+    ["Ace", "emotional opening · intimacy · compassion", "blocked feeling · emptiness · withheld love"],
+    ["Two", "connection · mutuality · partnership", "imbalance · separation · broken communication"],
+    ["Three", "friendship · celebration · community", "overindulgence · gossip · isolation"],
+    ["Four", "contemplation · apathy · reevaluation", "renewed interest · awareness · choosing again"],
+    ["Five", "grief · regret · loss", "acceptance · healing · moving forward"],
+    ["Six", "nostalgia · innocence · reunion", "living in the past · idealization · growing up"],
+    ["Seven", "choices · fantasy · projection", "clarity · alignment · reality check"],
+    ["Eight", "walking away · seeking truth · transition", "avoidance · fear of leaving · returning"],
+    ["Nine", "contentment · pleasure · wish fulfilled", "dissatisfaction · excess · shallow comfort"],
+    ["Ten", "emotional harmony · family · lasting joy", "disconnection · strained bonds · misaligned values"],
+    ["Page", "sensitivity · intuition · heartfelt message", "emotional immaturity · insecurity · blocked creativity"],
+    ["Knight", "romance · invitation · following the heart", "moodiness · fantasy · disappointment"],
+    ["Queen", "empathy · care · emotional wisdom", "self-neglect · dependence · emotional overwhelm"],
+    ["King", "emotional balance · diplomacy · devotion", "emotional control · volatility · manipulation"],
+  ],
+  Swords: [
+    ["Ace", "clarity · truth · breakthrough", "confusion · harsh words · clouded judgement"],
+    ["Two", "stalemate · difficult choice · guarded heart", "information overload · indecision · truth emerging"],
+    ["Three", "heartbreak · sorrow · painful truth", "recovery · forgiveness · releasing pain"],
+    ["Four", "rest · recovery · contemplation", "burnout · restlessness · forced pause"],
+    ["Five", "conflict · hollow victory · tension", "reconciliation · remorse · unresolved resentment"],
+    ["Six", "transition · leaving difficulty · passage", "stuckness · unfinished business · resisting change"],
+    ["Seven", "strategy · secrecy · acting alone", "confession · self-deception · strategy exposed"],
+    ["Eight", "restriction · fear · trapped thinking", "release · new perspective · reclaiming agency"],
+    ["Nine", "anxiety · worry · sleepless thought", "hope · reaching out · deepening distress"],
+    ["Ten", "painful ending · collapse · finality", "recovery · survival · resisting an ending"],
+    ["Page", "curiosity · vigilance · direct communication", "gossip · defensiveness · scattered thoughts"],
+    ["Knight", "ambition · speed · decisive action", "aggression · haste · cutting words"],
+    ["Queen", "independence · perception · clear boundaries", "coldness · bitterness · cruel judgement"],
+    ["King", "reason · truth · intellectual authority", "misuse of power · rigidity · manipulation"],
+  ],
+  Pentacles: [
+    ["Ace", "opportunity · grounding · tangible beginning", "missed chance · scarcity · poor planning"],
+    ["Two", "balance · adaptability · shifting priorities", "overcommitment · disorganization · imbalance"],
+    ["Three", "collaboration · craft · shared effort", "disharmony · low standards · working alone"],
+    ["Four", "security · possession · holding close", "generosity · release · fear of loss"],
+    ["Five", "hardship · exclusion · asking for help", "recovery · support · renewed hope"],
+    ["Six", "generosity · reciprocity · support", "strings attached · unequal exchange · debt"],
+    ["Seven", "patience · assessment · long-term care", "impatience · little return · scattered effort"],
+    ["Eight", "practice · dedication · careful work", "perfectionism · monotony · underdeveloped skill"],
+    ["Nine", "independence · self-worth · earned comfort", "overwork · dependence · false appearances"],
+    ["Ten", "legacy · stability · enduring bonds", "family tension · instability · short-term thinking"],
+    ["Page", "study · ambition · practical message", "procrastination · lack of focus · missed lesson"],
+    ["Knight", "reliability · routine · patient effort", "stagnation · boredom · stubbornness"],
+    ["Queen", "nurture · resourcefulness · grounded care", "self-neglect · imbalance · smothering care"],
+    ["King", "security · stewardship · steady provision", "materialism · possessiveness · stubborn control"],
+  ],
+};
+
+const minorArcana = Object.entries(minorMeanings).flatMap(([suit, cards]) => cards.map(
+  ([rank, upright, reversed], index) => ({
+    number: rank,
+    name: `${rank} of ${suit}`,
+    rank,
+    suit,
+    suitKey: suit.toLowerCase(),
+    count: Math.min(index + 1, 10),
+    upright,
+    reversed,
+    type: index < 10 ? "pip" : "court",
+  }),
+));
+
+const tarotDeck = [...majorArcana, ...minorArcana];
+
+function randomIndex(max) {
+  if (!window.crypto?.getRandomValues) return Math.floor(Math.random() * max);
+  const range = 0x100000000;
+  const limit = Math.floor(range / max) * max;
+  const values = new Uint32Array(1);
+  do window.crypto.getRandomValues(values); while (values[0] >= limit);
+  return values[0] % max;
+}
+
+function shuffledDeck() {
+  const cards = [...tarotDeck];
+  for (let index = cards.length - 1; index > 0; index -= 1) {
+    const swapIndex = randomIndex(index + 1);
+    [cards[index], cards[swapIndex]] = [cards[swapIndex], cards[index]];
+  }
+  return cards;
+}
+
+function renderTarotSymbols(card) {
+  tarotCardSymbols.replaceChildren();
+  if (card.type === "major") {
+    const symbol = document.createElement("span");
+    symbol.className = "tarot-symbol major";
+    tarotCardSymbols.append(symbol);
+    return;
+  }
+  if (card.type === "court") {
+    const symbol = document.createElement("span");
+    const letter = document.createElement("b");
+    symbol.className = "tarot-symbol court";
+    letter.textContent = card.rank.slice(0, 1);
+    symbol.append(letter);
+    tarotCardSymbols.append(symbol);
+    return;
+  }
+  for (let index = 0; index < card.count; index += 1) {
+    const symbol = document.createElement("span");
+    symbol.className = `tarot-symbol ${card.suitKey}`;
+    tarotCardSymbols.append(symbol);
+  }
+}
+
+function showTarotCard(question) {
+  const card = shuffledDeck()[0];
+  const reversed = randomIndex(2) === 1;
+  const keywords = reversed ? card.reversed : card.upright;
+  const firstKeyword = keywords.split(" · ")[0];
+  tarotCard.classList.toggle("is-reversed", reversed);
+  tarotCardNumber.textContent = card.number;
+  tarotCardName.textContent = card.name;
+  tarotQuestionEcho.textContent = question;
+  tarotOrientation.textContent = reversed ? "REVERSED / 逆位" : "UPRIGHT / 正位";
+  tarotResultName.textContent = card.name;
+  tarotKeywords.textContent = keywords;
+  tarotReflection.textContent = reversed
+    ? `Where might ${firstKeyword} be blocked, withheld, or turned inward in this question?`
+    : `What changes if you treat ${firstKeyword} as something to practise, rather than an answer you must believe?`;
+  renderTarotSymbols(card);
+  tarotResult.hidden = false;
+  tarotTable.classList.add("has-result");
+}
+
+tarotQuestion.addEventListener("input", () => {
+  tarotCount.textContent = `${tarotQuestion.value.length} / 220`;
+});
+
+tarotForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const question = tarotQuestion.value.trim();
+  if (!question) return;
+  tarotResult.hidden = true;
+  tarotTable.classList.remove("has-result");
+  tarotTable.classList.add("is-shuffling");
+  tarotDraw.disabled = true;
+  tarotDraw.firstChild.textContent = "SHUFFLING… ";
+  window.setTimeout(() => {
+    tarotTable.classList.remove("is-shuffling");
+    tarotDraw.disabled = false;
+    tarotDraw.firstChild.textContent = "SHUFFLE & DRAW ";
+    showTarotCard(question);
+  }, 900);
+});
+
+tarotAgain.addEventListener("click", () => {
+  tarotResult.hidden = true;
+  tarotTable.classList.remove("has-result");
+  tarotQuestion.value = "";
+  tarotCount.textContent = "0 / 220";
+  window.setTimeout(() => tarotQuestion.focus(), 350);
+});
